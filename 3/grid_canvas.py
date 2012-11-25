@@ -1,7 +1,7 @@
 
 import tkinter
 
-from types import Point, Rect
+from natives import Point, Rect
 
 class GridCanvas:
 	def __init__(self, dimension, scale):

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 # check for python 3!
 import sys
 if sys.version_info[0] < 3:
@@ -8,7 +9,8 @@ del sys
 
 
 # actual program
-from types import Point, Rect
+
+from natives import Point, Rect
 
 from grid_canvas import GridCanvas
 from room import Room
@@ -53,14 +55,26 @@ def solve(room):
 	return path
 
 if __name__ == '__main__':
-	f = open('raum0_beispiel.txt', 'r')
-	#f = open('raum1.txt', 'r')
-	#f = open('raum2.txt', 'r')
-	#f = open('raum3.txt', 'r')
-	room = Room(f)
-	f.close()
+	import argparse
+	import sys
 
-	grid_canvas = GridCanvas(room.dimension, 10)
+	p = argparse.ArgumentParser()
+	p.add_argument('input', help="file to use as input")
+		# for format documentation, see http://www.bundeswettbewerb-informatik.de/index.php?id=1168 (german)
+	p.add_argument('-s', '--scale', type=int, default=10, help="pixels per grid point")
+	args = p.parse_args()
+
+	in_file = sys.stdin
+
+	if args.input != '-':
+		in_file = open(args.input, 'r')
+
+	room = Room(in_file)
+
+	if in_file != sys.stdin:
+		in_file.close()
+
+	grid_canvas = GridCanvas(room.dimension, args.scale)
 	room.paint(grid_canvas)
 
 	path = solve(room)

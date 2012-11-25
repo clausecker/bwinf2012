@@ -1,5 +1,5 @@
 
-from types import Point, Rect
+from natives import Point, Rect
 
 class Path:
 	def __init__(self, pos):
