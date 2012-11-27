@@ -1,4 +1,5 @@
-main
+stats
 *.o
 *.s
 gprof.out
+stats.csv

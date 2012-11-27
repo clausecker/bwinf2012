@@ -36,14 +36,14 @@ typedef struct company company_t;
 
 static bool happy(const worker_t *worker,double threshold) {
 	int i;
-	int cups_count = 0, brew_count = 0;
+	int cup_count = 0, can_count = 0;
 
 	/* get amount of cups drunk, cans brewed */
-	for (i = 0; i < STAT_DAYS; i++) cups_count += worker->stat_cups[i];
-	for (i = 0; i < STAT_DAYS; i++) brew_count += worker->stat_brew[i];
+	for (i = 0; i < STAT_DAYS; i++) cup_count += worker->stat_cups[i];
+	for (i = 0; i < STAT_DAYS; i++) can_count += worker->stat_brew[i];
 
 	/* I interpretate n >= 10 as "n >= sliding window" */
-	return cups_count >= STAT_DAYS && brew_count / cups_count < threshold;
+	return  cup_count >= STAT_DAYS && 1.0L*can_count/cup_count < threshold;
 }
 
 /* xorshift random number generator for random number generation with good
@@ -84,15 +84,14 @@ static void coffee_round(company_t *company) {
 	shuffle_array(company->workers,order);
 
 	for (i = 0; i < WORKER_COUNT; i++) {
-		if (company->can_state == 0) {
-			if (company->day_number < INTRO_DAYS) goto drink;
+		if (company->can_state == 0 && company->day_number >= INTRO_DAYS) {
 			if (!happy(order[i],company->threshold)) continue;
 
 			company->can_state = CAN_CAPACITY - 1;
 			order[i]->stat_brew[day_mod]++;
 		}
 
-		drink: company->can_state--;
+		company->can_state--;
 		order[i]->stat_cups[day_mod]++;
 		company->total_cups++;
 	}
