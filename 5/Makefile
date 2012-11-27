@@ -1,6 +1,12 @@
 CFLAGS ?= -O3 -Wall
-stats.csv: stats
+
+stats.pdf: stats.tsv
+	gnuplot stats.gp
+
+stats.tsv: stats
 	./stats.sh
+
 clean:
-	$(RM) stats stats.csv
+	$(RM) stats stats.tsv stats.pdf
+
 .PHONY: clean

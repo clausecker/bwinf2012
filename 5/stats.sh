@@ -3,23 +3,19 @@
 #shell script for statistics creation. This shell script generates a table of
 #statistics for a lot of happiness thresholds and saves them into happiness.csv
 
-STATFILE=stats.csv
-
-#set numeric locale to C in order to get correct separators
-LC_NUMERIC=C
+#various parameters
+STATFILE=stats.tsv
+SIM=./stats
+JOBS=$(grep -ic ^processor /proc/cpuinfo) #number of processors available
 
 #search space
 START=0.0
-STEP=0.01
-END=1.0
-DAYS=1000000
+STEP=0.0005
+END=0.2
+DAYS=$((1024*1024))
 
-SIM=./stats
-
-rm -f $STATFILE
-
-#main loop
-for i in $(seq $START $STEP $END)
-do
-	{ echo -n "$i," ; $SIM $DAYS $i ; } >>$STATFILE
-done
+LC_NUMERIC=C #set numeric locale to C in order to get correct separators
+LC_COLLATE=C #set collating sequence to C in order to sort correctly
+#calculate results in parallel
+seq $START $STEP $END | xargs -n 1 -P $JOBS $SIM $DAYS >$STATFILE
+sort -o $STATFILE $STATFILE #sort output as it might be unordered

@@ -84,7 +84,7 @@ static void coffee_round(company_t *company) {
 	shuffle_array(company->workers,order);
 
 	for (i = 0; i < WORKER_COUNT; i++) {
-		if (company->can_state == 0 && company->day_number >= INTRO_DAYS) {
+		if (!company->can_state && company->day_number >= INTRO_DAYS) {
 			if (!happy(order[i],company->threshold)) continue;
 
 			company->can_state = CAN_CAPACITY - 1;
@@ -139,7 +139,10 @@ int main(int argc,char **argv) {
 
 	while (company->day_number < day_count) day(company);
 
-	printf("%lf\n",((double)company->total_cups/day_count)/WORKER_COUNT);
+	/* print output */
+	printf("%.6lf\t%.6lf\n",
+	  company->threshold,
+	  ((double)company->total_cups/day_count)/WORKER_COUNT);
 
 	free(company);
 
