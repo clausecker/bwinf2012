@@ -48,16 +48,38 @@ static bool happy(const worker_t *worker,double threshold) {
 
 /* xorshift random number generator for random number generation with good
  * statistical properties. See http://en.wikipedia.org/wiki/Xorshift */
+static uint32_t xor_state[4];
+
 static uint32_t xor128(void) {
-	static uint32_t x = 123456789;
-	static uint32_t y = 362436069;
-	static uint32_t z = 521288629;
-	static uint32_t w = 88675123;
 	uint32_t t;
 
-	t = x ^ (x << 11);
-	x = y; y = z; z = w;
-	return w = w ^ (w >> 19) ^ (t ^ (t >> 8));
+	t = xor_state[0] ^ (xor_state[1] << 11);
+	xor_state[0] = xor_state[1];
+	xor_state[1] = xor_state[2];
+	xor_state[2] = xor_state[3];
+	return xor_state[3] = xor_state[3] ^ (xor_state[3] >> 19) ^ (t ^ (t >> 8));
+}
+
+/* initialize the random number generator. Return 0 on success. */
+static int init_xor128(void) {
+	FILE *entropy = fopen("/dev/urandom","rb");
+	size_t items_read;
+
+	if (entropy == NULL) {
+		perror("Can't open /dev/random");
+		return 1;
+	}
+
+	items_read = fread(xor_state,sizeof xor_state[0],4,entropy);
+
+	fclose(entropy);
+
+	if (items_read != sizeof(xor_state[0]*4)) {
+		fprintf(stderr,"Can't initialize random number generator.\n");
+		return 1;
+	}
+
+	return 0;
 }
 
 /* Generate a permutated array of pointers to members of an array of workers.
@@ -136,6 +158,8 @@ int main(int argc,char **argv) {
 		fprintf(stderr,"%s is not a valid threshold.\n",argv[2]);
 		return EXIT_FAILURE;
 	}
+
+	if (init_xor128()) return EXIT_FAILURE;
 
 	while (company->day_number < day_count) day(company);
 
