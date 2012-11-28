@@ -10,8 +10,8 @@ JOBS=$(grep -ic ^processor /proc/cpuinfo) #number of processors available
 
 #search space
 START=0.0
-STEP=0.0005
-END=0.2
+STEP=0.0016
+END=0.5
 DAYS=$((1024*1024))
 
 LC_NUMERIC=C #set numeric locale to C in order to get correct separators

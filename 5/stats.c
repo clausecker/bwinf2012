@@ -1,50 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
 
-/* number of days for sliding average, happiness, etc. */
-#define STAT_DAYS 10
-
-/* number of workers. Mask is needed to restrict search space */
-#define WORKER_COUNT 15
-#define WORKER_MASK 0xf
-
-#define INTRO_DAYS 10	/* Amount of days the assistant fills up the can */
-#define CAN_CAPACITY 10	/* Cups per can */
-#define SERVINGS 3	/* Coffee servings per worker per day */
+#define STAT_DAYS    10 /* days in statistical window */
+#define INTRO_DAYS   10 /* Amount of days the assistant fills up the can */
+#define WORKER_COUNT 15 /* number of worker in the company */
+#define WORKER_MASK 0xf /* mask is needed for array shuffling */
+#define CAN_CAPACITY 10 /* Cups per can */
+#define SERVINGS      3 /* Coffee servings per worker per day */
 
 /* data for one worker */
-struct worker {
+typedef struct {
 	int stat_cups[STAT_DAYS];
 	int stat_brew[STAT_DAYS];
-};
-
-typedef struct worker worker_t;
+} worker_t;
 
 /* data for the whole company at a given point */
-struct company {
+typedef struct {
 	double threshold;
 	int day_number;
 	int total_cups; /* total number of cups drunk by the workers */
 	int can_state;
 	worker_t workers[WORKER_COUNT];
-};
-
-typedef struct company company_t;
-
-static bool happy(const worker_t *worker,double threshold) {
-	int i;
-	int cup_count = 0, can_count = 0;
-
-	/* get amount of cups drunk, cans brewed */
-	for (i = 0; i < STAT_DAYS; i++) cup_count += worker->stat_cups[i];
-	for (i = 0; i < STAT_DAYS; i++) can_count += worker->stat_brew[i];
-
-	/* I interpretate n >= 10 as "n >= sliding window" */
-	return  cup_count >= STAT_DAYS && 1.0L*can_count/cup_count < threshold;
-}
+} company_t;
 
 /* xorshift random number generator for random number generation with good
  * statistical properties. See http://en.wikipedia.org/wiki/Xorshift */
@@ -57,7 +36,7 @@ static uint32_t xor128(void) {
 	xor_state[0] = xor_state[1];
 	xor_state[1] = xor_state[2];
 	xor_state[2] = xor_state[3];
-	return xor_state[3] = xor_state[3] ^ (xor_state[3] >> 19) ^ (t ^ (t >> 8));
+	return xor_state[3] = xor_state[3] ^ (xor_state[3] >> 19) ^ (t^(t>>8));
 }
 
 /* initialize the random number generator. Return 0 on success. */
@@ -96,6 +75,19 @@ static void shuffle_array(
 		out[i] = out[j];
 		out[j] = workers + i;
 	}
+}
+
+/* Is a worker happy? */
+static bool happy(const worker_t *worker,double threshold) {
+	int i;
+	int cup_count = 0, can_count = 0;
+
+	/* get amount of cups drunk, cans brewed */
+	for (i = 0; i < STAT_DAYS; i++) cup_count += worker->stat_cups[i];
+	for (i = 0; i < STAT_DAYS; i++) can_count += worker->stat_brew[i];
+
+	/* I interpretate n >= 10 as "n >= sliding window" */
+	return  cup_count >= STAT_DAYS && 1.0L*can_count/cup_count < threshold;
 }
 
 /* simulate one round of coffee for all workers */
