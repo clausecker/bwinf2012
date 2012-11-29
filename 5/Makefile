@@ -7,8 +7,8 @@ PYGMENTIZE_OPTS ?= -O linenos
 
 5.pdf: 5.tex stats.pdf stats.tex definitions.tex
 	$(RM) *.aux
-	$(XELATEX) -halt-on-error $<
-	$(XELATEX) -halt-on-error $<
+	$(XELATEX) -halt-on-error $< >/dev/null
+	$(XELATEX) -halt-on-error $< >/dev/null
 
 definitions.tex:
 	$(PYGMENTIZE) -f tex -S $(PYGMENTIZE_STYLE) -f tex > $@

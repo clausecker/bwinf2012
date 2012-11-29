@@ -6,7 +6,8 @@
 #define STAT_DAYS    10 /* days in statistical window */
 #define INTRO_DAYS   10 /* Amount of days the assistant fills up the can */
 #define WORKER_COUNT 15 /* number of worker in the company */
-#define WORKER_MASK 0xf /* mask is needed for array shuffling */
+#define WORKER_BITS   4 /* number of bits used by WORKER_COUNT */
+#define WORKER_MASK ((1<<WORKER_BITS)-1)
 #define CAN_CAPACITY 10 /* Cups per can */
 #define SERVINGS      3 /* Coffee servings per worker per day */
 
@@ -27,20 +28,31 @@ typedef struct {
 
 /* xorshift random number generator for random number generation with good
  * statistical properties. See http://en.wikipedia.org/wiki/Xorshift */
-static uint32_t xor_state[4];
+static uint32_t xor_state[4], xor_now;
+static int xor_entropy = 0;
 
-static uint32_t xor128(void) {
+static uint32_t xor128(int bits) {
 	uint32_t t;
 
-	t = xor_state[0] ^ (xor_state[1] << 11);
-	xor_state[0] = xor_state[1];
-	xor_state[1] = xor_state[2];
-	xor_state[2] = xor_state[3];
-	return xor_state[3] = xor_state[3] ^ (xor_state[3] >> 19) ^ (t^(t>>8));
+	/* use remaining entropy if possible */
+	if (xor_entropy < bits) {
+		xor_entropy = 32;
+		t = xor_state[0] ^ (xor_state[1] << 11);
+		xor_state[0] = xor_state[1];
+		xor_state[1] = xor_state[2];
+		xor_state[2] = xor_state[3];
+		xor_state[3] ^= (xor_state[3] >> 19) ^ (t ^ ( t >> 8));
+		xor_now = xor_state[3];
+	}
+
+	xor_entropy -= bits;
+	t = xor_now & ((1<<bits)-1);
+	xor_now >>= bits;
+	return t;
 }
 
 /* initialize the random number generator. Return 0 on success. */
-static int init_xor128(void) {
+static uint32_t init_xor128(void) {
 	FILE *entropy = fopen("/dev/urandom","rb");
 	size_t items_read;
 
@@ -61,6 +73,12 @@ static int init_xor128(void) {
 	return 0;
 }
 
+/* number of bits used by i. __builtin_clz is an intrisic available on gcc
+ * and clang. */
+static int bits(uint32_t i) {
+	return 32 - __builtin_clz(i);
+}
+
 /* Generate a permutated array of pointers to members of an array of workers.
  * Algorithm taken from http://en.wikipedia.org/wiki/Fisher–Yates_shuffle */
 static void shuffle_array(
@@ -71,7 +89,7 @@ static void shuffle_array(
 
 	for (i = 1; i < WORKER_COUNT; i++) {
 		/* get random numbers till you get one in range */
-		while (j = xor128() & WORKER_MASK, j > i);
+		while (j = xor128(bits(i)), j > i);
 		out[i] = out[j];
 		out[j] = workers + i;
 	}
