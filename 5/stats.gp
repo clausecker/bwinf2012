@@ -1,5 +1,5 @@
-set xlabel 'Happiness threshold'
-set ylabel 'Cups per day per worker'
-set terminal pdf
-set output "stats.pdf"
-plot './stats.tsv' w lines smooth bezier t ""
+set xlabel "Glücklichkeitsschwellwert $\\alpha$"
+set ylabel "Tassen pro Mitarbeiter pro Tag"
+set terminal epslatex color
+set output "plot.tex"
+plot './stats.tsv' w lines t ""

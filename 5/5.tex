@@ -1,8 +1,5 @@
 \documentclass{scrartcl}
 
-\usepackage{libertineotf}
-\usepackage[euler-digits,small]{eulervm}
-
 \usepackage{fontspec}
 %\usepackage{amsfonts}
 \usepackage{ngerman}
@@ -64,13 +61,13 @@ verwendet. Nach dem Schubfachprinzip ist jeder mögliche Bruch in dieser
 Testmenge enthalten.
 
 Simulationen für alle $\alpha$ aus oben beschriebener Testmenge durchzuführen
-dauert auf meinem System anderthalb Minuten. Ich erwarte keine signifikante
+dauert auf meinem System ungefähr eine Minute. Ich erwarte keine signifikante
 Verbesserung der Ergebnisse durch mehr Fälle für $\alpha$ oder mehr Tage.
 
 \section{Ergebnisse}
 \begin{figure}
 \begin{center}
-\includegraphics{stats.pdf}
+\input{plot.tex}
 \end{center}
 \caption{Ergebnis der Simulation}
 \label{simulation}
@@ -87,15 +84,27 @@ statistische Anomalie: im Bereich $\alpha\in[0.08,0.10]$ springt die Anzahl der
 getrunkenen Tassen mit steigendem $\alpha$ hoch und runter. Ich vermute, dass
 dies an bestimmten chaotisch ablaufenden Ketten von Wahrscheinlichkeiten liegt.
 
-\appendix
+\newpage\appendix
 \section{Quelltext}
 Es folgt der Quelltext des geschriebenen Simulationsprogrammes. Dieses ist in
-C99 für das Betriebssystem Linux geschrieben. Das Programm sollte auch auf
-anderen Unix-Derivaten ohne Änderungen laufen. Um es auf gänzlich anderen
-Systemen auszuführen ist es unter Umständen notwendig, die Initialisierung des
-Zufallsgenerators zu verändern. Das Programm liest zu diesem Zweck die Datei
-\texttt{/dev/urandom} aus, welche auf anderen Betriebssystemen nicht verfügbar
-sein könnte.
+C99 für das Betriebssystem Linux geschrieben. Das Programm nimmt als Eingabe
+eine Simulationsdauer und ein $\alpha$. Mit diesen Werten wird dann simuliert.
 
-\include{stats}
+Das Programm sollte auch auf anderen Unix-Derivaten ohne Änderungen laufen. Um
+es auf gänzlich anderen Systemen auszuführen ist es unter Umständen notwendig,
+die Initialisierung des Zufallsgenerators zu verändern. Das Programm liest zu
+diesem Zweck die Datei \texttt{/dev/urandom} aus, welche auf anderen
+Betriebssystemen nicht verfügbar sein könnte.
+
+Um die Simulation zu beschleunigen wurde zudem Gebrauch von der in gcc und clang
+eingebauten Funktion \texttt{\_\_builtin\_clz} gemacht. Diese berechnet die
+Anzahl der führenden Null-Bits einer Variable und wird hier gebraucht, um vom
+Zufallsgenerator gerade nur die benötigte Anzahl an Bits anzufordern, sodass
+dieser nicht unnötig häufig neuen Zufall erzeugen muss. Sollte diese Funktion
+nicht verfügbar sein, kann man stattdessen einfach immer 4 zurückliefern, weil
+dies die maximal gebrauchte Anzahl an Bits ist. Die Funktion von Hand zu
+implementieren lohnt nicht, weil der Zufallsgenerator im Zweifel weniger Zeit
+braucht als diese Berechnungsschleife.
+
+\input{stats.tex}
 \end{document}

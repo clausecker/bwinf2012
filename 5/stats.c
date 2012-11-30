@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #define STAT_DAYS    10 /* days in statistical window */
-#define INTRO_DAYS   10 /* Amount of days the assistant fills up the can */
+#define INTRO_DAYS   10 /* Amount of days the assistant refills the can */
 #define WORKER_COUNT 15 /* number of worker in the company */
 #define WORKER_BITS   4 /* number of bits used by WORKER_COUNT */
 #define WORKER_MASK ((1<<WORKER_BITS)-1)
@@ -13,9 +13,9 @@
 
 /* data for one worker */
 typedef struct {
-	int stat_cups[STAT_DAYS];
-	int stat_brew[STAT_DAYS];
-} worker_t;
+	int cups;
+	int cans;
+} worker_t[STAT_DAYS];
 
 /* data for the whole company at a given point */
 typedef struct {
@@ -66,7 +66,7 @@ static uint32_t init_xor128(void) {
 	fclose(entropy);
 
 	if (items_read != sizeof(xor_state[0]*4)) {
-		fprintf(stderr,"Can't initialize random number generator.\n");
+		fprintf(stderr,"Can't initialize rng.\n");
 		return 1;
 	}
 
@@ -79,7 +79,7 @@ static int bits(uint32_t i) {
 	return 32 - __builtin_clz(i);
 }
 
-/* Generate a permutated array of pointers to members of an array of workers.
+/* Generate a permuted array of pointers to members of an array of workers.
  * Algorithm taken from http://en.wikipedia.org/wiki/Fisher–Yates_shuffle */
 static void shuffle_array(
     worker_t workers[WORKER_COUNT], worker_t *out[WORKER_COUNT]) {
@@ -96,16 +96,16 @@ static void shuffle_array(
 }
 
 /* Is a worker happy? */
-static bool happy(const worker_t *worker,double threshold) {
+static bool happy(worker_t *worker,double threshold) {
 	int i;
 	int cup_count = 0, can_count = 0;
 
 	/* get amount of cups drunk, cans brewed */
-	for (i = 0; i < STAT_DAYS; i++) cup_count += worker->stat_cups[i];
-	for (i = 0; i < STAT_DAYS; i++) can_count += worker->stat_brew[i];
+	for (i = 0; i < STAT_DAYS; i++) cup_count += (*worker)[i].cups;
+	for (i = 0; i < STAT_DAYS; i++) can_count += (*worker)[i].cans;
 
-	/* I interpretate n >= 10 as "n >= sliding window" */
-	return  cup_count >= STAT_DAYS && 1.0L*can_count/cup_count < threshold;
+	/* I interprete n >= 10 as "n >= sliding window" */
+	return cup_count >= STAT_DAYS && 1.0L*can_count/cup_count < threshold;
 }
 
 /* simulate one round of coffee for all workers */
@@ -120,23 +120,24 @@ static void coffee_round(company_t *company) {
 			if (!happy(order[i],company->threshold)) continue;
 
 			company->can_state = CAN_CAPACITY - 1;
-			order[i]->stat_brew[day_mod]++;
+			(*order[i])[day_mod].cans++;
 		}
 
 		company->can_state--;
-		order[i]->stat_cups[day_mod]++;
+		(*order[i])[day_mod].cups++;
 		company->total_cups++;
 	}
 }
 
 /* simulate one day of coffee */
 static void day(company_t *company) {
+	/* day_mod: index into the statistical tables */
 	int i, day_mod = company->day_number % STAT_DAYS;
 
 	/* zero out statistics entry for today */
 	for (i = 0;i < WORKER_COUNT; i++) {
-		company->workers[i].stat_cups[day_mod] = 0;
-		company->workers[i].stat_brew[day_mod] = 0;
+		company->workers[i][day_mod].cups = 0;
+		company->workers[i][day_mod].cans = 0;
 	}
 
 	company->can_state = 0; /* empty can */

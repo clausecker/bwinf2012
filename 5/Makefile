@@ -5,7 +5,7 @@ PYGMENTIZE ?= pygmentize
 PYGMENTIZE_STYLE ?= borland
 PYGMENTIZE_OPTS ?= -O linenos
 
-5.pdf: 5.tex stats.pdf stats.tex definitions.tex
+5.pdf: 5.tex plot.tex stats.tex definitions.tex
 	$(RM) *.aux
 	$(XELATEX) -halt-on-error $< >/dev/null
 	$(XELATEX) -halt-on-error $< >/dev/null
@@ -16,13 +16,13 @@ definitions.tex:
 .c.tex:
 	$(PYGMENTIZE) $(PYGMENTIZE_OPTS) -o $@ $<
 
-stats.pdf: stats.tsv
-	$(GNUPLOT) stats.gp
+plot.tex: stats.gp stats.tsv
+	$(GNUPLOT) $<
 
 stats.tsv: stats
 	./stats.sh
 
 clean:
-	$(RM) *.pdf *.aux *.log definitions.tex stats.tex *.tsv stats
+	$(RM) *.pdf *.aux *.log definitions.tex stats.tex plot.tex *.tsv stats *.eps
 
 .PHONY: clean

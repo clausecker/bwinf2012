@@ -8,3 +8,4 @@ stats.tsv
 !5.tex
 *.log
 *.aux
+*.eps
