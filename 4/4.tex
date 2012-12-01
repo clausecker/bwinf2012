@@ -1,0 +1,56 @@
+\documentclass{scrartcl}
+
+\usepackage{fontspec}
+%\usepackage{amsfonts}
+\usepackage{ngerman}
+\usepackage{verbatim}
+\usepackage{url}
+\usepackage{parskip}
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+
+%Definitionen für den Formatierer
+\include{definitions}
+
+\title{Lösung der Aufgabe~5}
+\subtitle{des 31.~Bundeswettbewerbs Informatik}
+\author{Tobias Bucher, Robert Clausecker}
+
+% Syntaxdefinitionen
+\setlength{\parskip}{0.5em plus0.5em minus0.5em}
+\setlength{\parindent}{1em}
+
+\newcommand{\src}[1]{\texttt{#1}}
+
+\begin{document}
+\maketitle
+
+\section{Vorbetrachtung}
+Gegeben ist eine Iteration des \textsc{Sierpinski}-Teppichs. Ziel ist es, die
+nächste Iteration daraus zu erzeugen.
+
+\section{Algorithmus}
+Der Algorithmus zur Lösung dieser Aufgabe ist relativ simpel, man gehe alle
+Elemente des SVGs durch und ersetze jedes weiße Quadrat durch neun kleinere
+kongruente Quadrate, von denen das mittlere schwarz ist.
+
+\section{Ausgabe}
+Siehe Abbildungen.
+
+\begin{figure}
+	\center\includegraphics[width=0.9\textwidth]{sierpinsky}
+	\caption{Iteration 7 des \textsc{Sierpinski}-Teppichs}
+\end{figure}
+
+\newpage\appendix
+\section{Quelltext}
+Es folgt der Quelltext für das Iterieren des \textsc{Sierpinsky}-Teppichs. Das
+Programm ist in Python 3 unter Linux geschrieben worden, sollte aber auch auf
+anderen Betriebssystemen ohne Änderungen laufen.
+
+Das Programm nimmt optional eine Eingabedatei und eine Ausgabedatei als
+Parameter.
+
+Beispiel für einen möglichen Aufruf: \src{./iterate.py figur0\_beispiel.svg}
+
+\end{document}

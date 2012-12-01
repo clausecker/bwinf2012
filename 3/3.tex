@@ -1,0 +1,99 @@
+\documentclass{scrartcl}
+
+\usepackage{fontspec}
+%\usepackage{amsfonts}
+\usepackage{ngerman}
+\usepackage{verbatim}
+\usepackage{url}
+\usepackage{parskip}
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+
+%Definitionen für den Formatierer
+\include{definitions}
+
+\title{Lösung der Aufgabe~3}
+\subtitle{des 31.~Bundeswettbewerbs Informatik}
+\author{Tobias Bucher, Robert Clausecker}
+
+% Syntaxdefinitionen
+\setlength{\parskip}{0.5em plus0.5em minus0.5em}
+\setlength{\parindent}{1em}
+
+\newcommand{\src}[1]{\texttt{#1}}
+
+\begin{document}
+\maketitle
+
+\section{Vorbetrachtungen}
+Das gegebene Labyrinth besteht aus einer quadratisch gerasterten endlichen
+Fläche, in der jedes Quadrat des Gitters eindeutig entweder betretbar oder
+nicht betretbar ist. Der Roboter "`Turn90"' hat nur eingeschränkte Bewegungs-
+und Wahrnehmungsmöglichkeiten, so kann er sich nur um 90 Grad drehen und
+vorwärts bewegen. Weiterhin hat er Kontaktsensoren, die bestimmen können, ob
+der Roboter sich an einer Wand befindet.
+
+Vereinfacht werde angenommen, dass der Roboter sich immer auf genau einem Feld
+in dem Raster befindet. Er habe die Möglichkeit, sich um 90 Grad zu drehen, ein
+Feld vorwärts zu gehen, das Feld vor ihm und das Feld links von ihm auf
+Kollision prüfen.
+
+\section{Grundidee}
+Um den Ausgang des Raums zu finden, bietet sich ein Algorithmus zum Lösen von
+Irrgarten an, da der gerasterte Raum auch nur ein Irrgarten mit unüblich vielen
+Gängen ist. Da der Roboter irgendwo im Raum startet und der Ausgang an der
+Außenmauer ist, bietet sich hierfür der \textsc{Pledge}-Algorithmus an.
+
+\section{Algorithmus}
+Der \textsc{Pledge}-Algorithmus funktioniert für ein rechteckiges Raster wie
+folgt, wobei nach jeder Bewegung geprüft werden soll, ob der Roboter sich
+bereits am Ziel befindet:
+
+\begin{enumerate}
+\item Laufe geradeaus bis zu einem Hindernis
+\item Laufe nach rechts an der linken Wand entlang, bis der Zähler wieder auf
+$0$ ist, wobei Folgendes zu beachten ist:
+	\begin{itemize}
+	\item Der Zähler wird um eins hochgezählt wird, wenn der Roboter sich aufgrund des Wandfolgens nach rechts dreht.
+	\item Der Zähler wird um eins heruntergezählt, wenn er sich entsprechend nach links dreht.
+	\end{itemize}
+\end{enumerate}
+
+\section{Beispielausgaben}
+\begin{figure}
+	\center\includegraphics[width=0.9\textwidth]{raum0}
+	\caption{\src{raum0\_beispiel.txt}}
+\end{figure}
+
+\begin{figure}
+	\center\includegraphics[width=0.9\textwidth]{raum1}
+	\caption{\src{raum1.txt}}
+\end{figure}
+
+\begin{figure}
+	\center\includegraphics[width=0.9\textwidth]{raum2}
+	\caption{\src{raum2.txt}}
+\end{figure}
+
+\begin{figure}
+	\includegraphics[width=0.9\textwidth]{raum3}
+	\caption{\src{raum3.txt}}
+\end{figure}
+
+\newpage\appendix
+\section{Quelltext}
+Es folgt der Quelltext für das Lösen des Labyrinths, das Lesen des
+spezifizierten Dateiformats und die Ausgabe. Das Programm ist in Python 3 unter
+Linux geschrieben worden, sollte aber auch auf anderen Betriebssystemen ohne
+Änderungen laufen.
+
+Für die Ausgabe wird die Python-Bibliothek \src{tkinter} benutzt.
+
+Das Programm nimmt die Eingabedatei als Parameter und optional noch einen
+Skalierungsfaktor der Ausgabe, die angibt, wieviele Pixel ein Rasterfeld hoch
+und breit ist.
+
+Beispiel für einen möglichen Aufruf: \src{./turn90.py raum0\_beispiel.txt %
+--scale 5}
+
+\end{document}
