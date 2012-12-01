@@ -81,17 +81,16 @@ static int bits(uint32_t i) {
 
 /* Generate a permuted array of pointers to members of an array of workers.
  * Algorithm taken from http://en.wikipedia.org/wiki/Fisher–Yates_shuffle */
-static void shuffle_array(
-    worker_t workers[WORKER_COUNT], worker_t *out[WORKER_COUNT]) {
+static void shuffle_array(int out[WORKER_COUNT]) {
 	int i,j;
 
-	out[0] = workers;
+	out[0] = 0;
 
 	for (i = 1; i < WORKER_COUNT; i++) {
 		/* get random numbers till you get one in range */
 		while (j = xor128(bits(i)), j > i);
 		out[i] = out[j];
-		out[j] = workers + i;
+		out[j] = i;
 	}
 }
 
@@ -110,21 +109,22 @@ static bool happy(worker_t *worker,double threshold) {
 
 /* simulate one round of coffee for all workers */
 static void coffee_round(company_t *company) {
-	worker_t *order[WORKER_COUNT];
+	int order[WORKER_COUNT];
 	int i, day_mod = company->day_number % STAT_DAYS;
 
-	shuffle_array(company->workers,order);
+	shuffle_array(order);
 
 	for (i = 0; i < WORKER_COUNT; i++) {
+		int j = order[i];
 		if (!company->can_state && company->day_number >= INTRO_DAYS) {
-			if (!happy(order[i],company->threshold)) continue;
+			if (!happy(&company->workers[j],company->threshold)) continue;
 
 			company->can_state = CAN_CAPACITY - 1;
-			(*order[i])[day_mod].cans++;
+			company->workers[j][day_mod].cans++;
 		}
 
 		company->can_state--;
-		(*order[i])[day_mod].cups++;
+		company->workers[j][day_mod].cups++;
 		company->total_cups++;
 	}
 }
