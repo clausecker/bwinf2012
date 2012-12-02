@@ -1,4 +1,3 @@
-CFLAGS ?= -O3 -Wall
 XELATEX ?= xelatex
 PSTOPDF ?= pstopdf
 PYTHON ?= python # python3

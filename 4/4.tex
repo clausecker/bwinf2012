@@ -37,10 +37,19 @@ kongruente Quadrate, von denen das mittlere schwarz ist.
 \section{Ausgabe}
 Siehe Abbildungen.
 
-\begin{figure}
-	\center\includegraphics[width=0.9\textwidth]{sierpinsky}
-	\caption{Iteration 7 des \textsc{Sierpinski}-Teppichs}
+\newcommand{\SierpinskyIteration}[1]{%
+\begin{figure} %
+	\center\includegraphics[width=0.9\textwidth]{figur0_it_#1} %
+	\caption{Iteration #1 des \textsc{Sierpinski}-Teppichs} %
 \end{figure}
+}
+
+\SierpinskyIteration{1}
+\SierpinskyIteration{2}
+\SierpinskyIteration{3}
+\SierpinskyIteration{4}
+\SierpinskyIteration{5}
+\SierpinskyIteration{6}
 
 \newpage\appendix
 \section{Quelltext}
@@ -51,6 +60,6 @@ anderen Betriebssystemen ohne Änderungen laufen.
 Das Programm nimmt optional eine Eingabedatei und eine Ausgabedatei als
 Parameter.
 
-Beispiel für einen möglichen Aufruf: \src{./iterate.py figur0\_beispiel.svg}
+Beispiel für einen möglichen Aufruf: \src{./iterate.py figur0.svg}
 
 \end{document}

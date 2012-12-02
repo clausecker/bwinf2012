@@ -4,6 +4,7 @@
 import sys
 if sys.version_info[0] < 3:
 	print("This program needs at least Python 3 to run.")
+	sys.exit(-1)
 del sys
 
 
