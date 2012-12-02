@@ -56,14 +56,14 @@ class Room:
 		# Gibt zurück, ob der vorliegende Punkt ein Ausgang ist
 		return self._in_rect(Point(*point), self.exit)
 
-	def paint(self, canvas):
+	def paint(self, canvas, color='red'):
 		# Zeichnet den Raum mit den Hindernissen
 		for r in self.rects:
-			canvas.draw_rect(r)
+			canvas.draw_rect(r, color=color)
 
 		# Außenbegrenzung
 		canvas.draw_rect((0, 0, self.dimension.x - 1,
-			self.dimension.y - 1), fill=False)
+			self.dimension.y - 1), fill=False, color=color)
 
 		# Ausgang
 		canvas.draw_rect(self.exit, color='white')

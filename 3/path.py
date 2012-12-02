@@ -20,7 +20,7 @@ class Path:
 		self.pos = newpos
 		self.path.append(newpos)
 
-	def paint(self, canvas):
+	def paint(self, canvas, color='green'):
 		for pos in self.path:
-			canvas.draw_rect((pos + pos), color='green')
+			canvas.draw_rect((pos + pos), color=color)
 

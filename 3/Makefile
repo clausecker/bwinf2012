@@ -8,7 +8,7 @@ TURN90_OPTS ?= --no-interactive
 
 .SUFFIXES: .txt .eps .pdf .py
 
-3.pdf: 3.tex raum0_beispiel.pdf raum1.pdf raum2.pdf raum3.pdf definitions.tex turn90.tex room.tex grid_canvas.tex path.tex natives.tex
+3.pdf: 3.tex raum0_beispiel.pdf raum1.pdf raum2.pdf raum3.pdf raum4.pdf raum5.pdf definitions.tex turn90.tex room.tex grid_canvas.tex path.tex natives.tex
 	$(RM) *.aux
 	$(XELATEX) -halt-on-error $< >/dev/null
 	$(XELATEX) -halt-on-error $< >/dev/null
@@ -26,6 +26,6 @@ definitions.tex:
 	$(PYGMENTIZE) $(PYGMENTIZE_OPTS) -o $@ $<
 
 clean:
-	$(RM) *.pdf *.aux *.log *.eps turn90.tex room.tex grid_canvas.tex path.tex definitions.tex natives.tex
+	$(RM) *.pdf *.aux *.log *.eps definitions.tex turn90.tex room.tex grid_canvas.tex path.tex natives.tex
 
 .PHONY: clean

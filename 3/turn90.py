@@ -97,6 +97,10 @@ if __name__ == '__main__':
 		help="file to output the result to")
 	p.add_argument('-q', '--no-interactive', action="store_true",
 		help="deactivate interactive window output")
+	p.add_argument('-w', '--wall-color', type=str, default='red',
+		help="color for the walls")
+	p.add_argument('-p', '--path-color', type=str, default='green',
+		help="color for the path")
 	args = p.parse_args()
 
 	in_file = sys.stdin
@@ -114,11 +118,11 @@ if __name__ == '__main__':
 	grid_canvas = GridCanvas("Turn90", room.dimension, args.scale)
 
 	# Raum einzeichnen
-	room.paint(grid_canvas)
+	room.paint(grid_canvas, color=args.wall_color)
 
 	# Weg berechnen und einzeichnen
 	path = solve(room)
-	path.paint(grid_canvas)
+	path.paint(grid_canvas, color=args.path_color)
 
 	# Ausgabe
 	if args.output:

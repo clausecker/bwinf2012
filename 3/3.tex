@@ -61,25 +61,24 @@ $0$ ist, wobei Folgendes zu beachten ist:
 
 \section{Beispielausgaben}
 Siehe Abbildungen.
+
+\newcommand{\RoomFigure}[1]{%
+\begin{figure} %
+	\center\includegraphics[width=0.9\textwidth]{#1} %
+	\caption{\src{#1.txt}} %
+\end{figure} %
+}
+
 \begin{figure}
 	\center\includegraphics[width=0.9\textwidth]{raum0_beispiel}
 	\caption{\src{raum0\_beispiel.txt}}
 \end{figure}
 
-\begin{figure}
-	\center\includegraphics[width=0.9\textwidth]{raum1}
-	\caption{\src{raum1.txt}}
-\end{figure}
-
-\begin{figure}
-	\center\includegraphics[width=0.9\textwidth]{raum2}
-	\caption{\src{raum2.txt}}
-\end{figure}
-
-\begin{figure}
-	\includegraphics[width=0.9\textwidth]{raum3}
-	\caption{\src{raum3.txt}}
-\end{figure}
+\RoomFigure{raum1}
+\RoomFigure{raum2}
+\RoomFigure{raum3}
+\RoomFigure{raum4}
+\RoomFigure{raum5}
 
 \newpage\appendix
 \section{Quelltext}
