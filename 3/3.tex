@@ -22,6 +22,8 @@
 
 \newcommand{\src}[1]{\texttt{#1}}
 
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+
 \begin{document}
 \maketitle
 
@@ -60,8 +62,9 @@ $0$ ist, wobei Folgendes zu beachten ist:
 \end{enumerate}
 
 \section{Beispielausgaben}
+Siehe Abbildungen.
 \begin{figure}
-	\center\includegraphics[width=0.9\textwidth]{raum0}
+	\center\includegraphics[width=0.9\textwidth]{raum0_beispiel}
 	\caption{\src{raum0\_beispiel.txt}}
 \end{figure}
 
@@ -95,5 +98,13 @@ und breit ist.
 
 Beispiel für einen möglichen Aufruf: \src{./turn90.py raum0\_beispiel.txt %
 --scale 5}
+
+\newcommand{\InputSource}[1]{\subsection*{#1.py}\input{#1}}
+
+\InputSource{turn90}
+\subsection*{grid\_canvas.py}\input{grid_canvas}
+\InputSource{path}
+\InputSource{room}
+\InputSource{natives}
 
 \end{document}
