@@ -1,0 +1,11 @@
+stats
+*.o
+*.s
+gprof.out
+stats.tsv
+*.pdf
+*.tex
+!5.tex
+*.log
+*.aux
+*.eps

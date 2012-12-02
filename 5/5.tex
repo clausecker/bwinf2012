@@ -1,0 +1,110 @@
+\documentclass{scrartcl}
+
+\usepackage{fontspec}
+%\usepackage{amsfonts}
+\usepackage{ngerman}
+\usepackage{verbatim}
+\usepackage{url}
+\usepackage{parskip}
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+
+%Definitionen für den Formatierer
+\include{definitions}
+
+\title{Lösung der Aufgabe~5}
+\subtitle{des 31.~Bundeswettbewerbs Informatik}
+\author{Tobias Bucher, Robert Clausecker}
+
+% Syntaxdefinitionen
+\setlength{\parskip}{0.5em plus0.5em minus0.5em}
+\setlength{\parindent}{1em}
+
+\begin{document}
+\maketitle
+\section{Vorüberlegungen}
+Die Kaffekanne fässt zehn Tassen, sie muss also nachdem zehn Mitarbeiter Kaffe
+getrunken haben aufgefüllt werden. Daher ist zu erwarten, dass ein Mitarbeiter
+im Schnitt alle zehn Male, die er Kaffe trinkt die Kanne auffüllen muss. Ich
+erwarte daher, dass ein Schwellwert $\alpha<\frac1{10}$ dazu führt, dass kaum
+einer bzw. gar keiner der Mitarbeiter Kaffee trinken wird, weil dieser Wert im
+Mittel nicht erfüllt werden kann. Für Schwellwerte $\alpha$, die ein wenig
+größer sind, erwarte ich, dass Mitarbeiter meistens glücklich sind, aufgrund
+statistischer Streungen wird es aber immer Situationen geben, wo Mitarbeiter
+nicht glücklich sind. Je höher $\alpha$ ist, desto seltener wird diese Situation
+sein.
+
+\section{Simulation}
+Die Simulation wird von einem Programm durchgeführt. Es als Variable Parameter
+sind die Anzahl der Tage, die simuliert werden und der Schwellwert $\alpha$ zu
+betrachten. Ersterer Parameter hat kaum Einfluss auf die Simulationsergebnisse,
+es ist aber darauf zu achten, diesen hinreichend groß zu wählen, um den Einfluss
+der ersten zehn Tage auf die Statistik zu mindern. Ich habe hier $2^{20}$
+gewählt; ein Durchlauf für diesen Wert läuft auf meinem System in knapp einer
+Sekunde und ist ausreichend lang.
+
+Zu betrachten ist auch die Auswahl von Kandidaten für $\alpha$. Offensichtlich
+kommt nur der Bereich $0\le\alpha\le1$ in Betracht. Ein Wert von $\alpha>1$ ist
+nicht sinnvoll, weil es unmöglich ist häufiger Kaffee zu kochen als diesen zu
+trinken und damit die Bedingung fürs unglücklich sein niemals erfüllt werden
+kann.
+
+Das nächste Detail ist die Granularität. Welche Werte für die Anzahl der
+getrunkenen Tassen $n$ und gebrühter Kannen $m$ kommen in Frage? Jeder der
+Angestellten versucht am Tag drei Tassen zu trinken, in zehn Tagen also 30. Dies
+ist auch die obere Schranke von $m$. Es lohnt sich für $\alpha$ nur Brüche mit
+Nenner und Zähler aus diesem Bereich zu testen. Da es die Vorbedinung $n\ge10$
+gibt, bleiben für $n$ und $m$ die ganzzahligen Bereiche $n\in\{10\dots30\}$ und
+$m\in\{0\dots30\}$ übrig. Dies sind insgesamt 600 Brüche. Ich habe in der
+Simulation die 626 Werte $\alpha\in\{0,\frac1{625},\frac2{625},\dots,1\}$
+verwendet. Nach dem Schubfachprinzip ist jeder mögliche Bruch in dieser
+Testmenge enthalten.
+
+Simulationen für alle $\alpha$ aus oben beschriebener Testmenge durchzuführen
+dauert auf meinem System ungefähr eine Minute. Ich erwarte keine signifikante
+Verbesserung der Ergebnisse durch mehr Fälle für $\alpha$ oder mehr Tage.
+
+\section{Ergebnisse}
+\begin{figure}
+\begin{center}
+\input{plot.tex}
+\end{center}
+\caption{Ergebnis der Simulation}
+\label{simulation}
+\end{figure}
+
+Es zeigt sich, dass für $\alpha>\frac12$ die Anzahl der getrunkenen Tassen
+Kaffee immer maximal ist. Aus diesem Grund habe ich die Beispielsimulation
+in Abbildung \ref{simulation} nur im Bereich $\alpha\in[0,\frac12]$ dargestellt.
+
+Die Ergebnisse der Simulation (vgl. Abbildung \ref{simulation}) erfüllen die
+vorher gestellten Erwartungen. Deutlich erkennbar ist der sofortige Sprung der
+getrunkenen Tassen bei $\alpha=\frac1{10}$. Interessant ist eine kleine
+statistische Anomalie: im Bereich $\alpha\in[0.08,0.10]$ springt die Anzahl der
+getrunkenen Tassen mit steigendem $\alpha$ hoch und runter. Ich vermute, dass
+dies an bestimmten chaotisch ablaufenden Ketten von Wahrscheinlichkeiten liegt.
+
+\newpage\appendix
+\section{Quelltext}
+Es folgt der Quelltext des geschriebenen Simulationsprogrammes. Dieses ist in
+C99 für das Betriebssystem Linux geschrieben. Das Programm nimmt als Eingabe
+eine Simulationsdauer und ein $\alpha$. Mit diesen Werten wird dann simuliert.
+
+Das Programm sollte auch auf anderen Unix-Derivaten ohne Änderungen laufen. Um
+es auf gänzlich anderen Systemen auszuführen ist es unter Umständen notwendig,
+die Initialisierung des Zufallsgenerators zu verändern. Das Programm liest zu
+diesem Zweck die Datei \texttt{/dev/urandom} aus, welche auf anderen
+Betriebssystemen nicht verfügbar sein könnte.
+
+Um die Simulation zu beschleunigen wurde zudem Gebrauch von der in gcc und clang
+eingebauten Funktion \texttt{\_\_builtin\_clz} gemacht. Diese berechnet die
+Anzahl der führenden Null-Bits einer Variable und wird hier gebraucht, um vom
+Zufallsgenerator gerade nur die benötigte Anzahl an Bits anzufordern, sodass
+dieser nicht unnötig häufig neuen Zufall erzeugen muss. Sollte diese Funktion
+nicht verfügbar sein, kann man stattdessen einfach immer 4 zurückliefern, weil
+dies die maximal gebrauchte Anzahl an Bits ist. Die Funktion von Hand zu
+implementieren lohnt nicht, weil der Zufallsgenerator im Zweifel weniger Zeit
+braucht als diese Berechnungsschleife.
+
+\input{stats.tex}
+\end{document}
