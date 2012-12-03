@@ -51,12 +51,14 @@ bereits am Ziel befindet:
 
 \begin{enumerate}
 \item Laufe geradeaus bis zu einem Hindernis
-\item Laufe nach rechts an der linken Wand entlang, bis der Zähler wieder auf
-$0$ ist, wobei Folgendes zu beachten ist:
+\item In diesem Schritt wird ein Zähler eingeführt, der die aktuelle Umdrehung
+mitzählt. Verfahre wie folgt: Laufe nach rechts an der linken Wand entlang, bis
+der Zähler wieder auf $0$ ist, wobei Folgendes zu beachten ist:
 	\begin{itemize}
 	\item Der Zähler wird um eins hochgezählt wird, wenn der Roboter sich aufgrund des Wandfolgens nach rechts dreht.
 	\item Der Zähler wird um eins heruntergezählt, wenn er sich entsprechend nach links dreht.
 	\end{itemize}
+Wenn der Zähler wieder auf $0$ ist, gehe zu Schritt 1.
 \end{enumerate}
 
 \section{Beispielausgaben}
