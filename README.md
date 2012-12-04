@@ -20,7 +20,7 @@ Compilation benötigt werden:
 Weitergabe
 ==========
 
-Copyright © 2012 Robert Clausecker, Thomas Schneider.
+Copyright © 2012 Robert Clausecker, Thomas Bucher.
 Alle Rechte vorbehalten, all rights reserved.
 
 Bitte wenden Sie sich an <fuzxxl@gmail.com> falls Sie
