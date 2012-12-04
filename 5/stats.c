@@ -6,8 +6,6 @@
 #define STAT_DAYS    10 /* days in statistical window */
 #define INTRO_DAYS   10 /* Amount of days the assistant refills the can */
 #define WORKER_COUNT 15 /* number of worker in the company */
-#define WORKER_BITS   4 /* number of bits used by WORKER_COUNT */
-#define WORKER_MASK ((1<<WORKER_BITS)-1)
 #define CAN_CAPACITY 10 /* Cups per can */
 #define SERVINGS      3 /* Coffee servings per worker per day */
 
@@ -61,11 +59,13 @@ static uint32_t init_xor128(void) {
 		return 1;
 	}
 
+	setbuf(entropy,NULL); /* We don't need any buffering */
+
 	items_read = fread(xor_state,sizeof xor_state[0],4,entropy);
 
 	fclose(entropy);
 
-	if (items_read != sizeof(xor_state[0]*4)) {
+	if (items_read != 4) {
 		fprintf(stderr,"Can't initialize rng.\n");
 		return 1;
 	}
