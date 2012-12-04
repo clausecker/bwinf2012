@@ -11,7 +11,7 @@ PYGMENTIZE_OPTS ?= -O linenos
 	$(XELATEX) -halt-on-error $< >/dev/null
 
 definitions.tex:
-	$(PYGMENTIZE) -f tex -S $(PYGMENTIZE_STYLE) -f tex > $@
+	$(PYGMENTIZE) -f tex -S $(PYGMENTIZE_STYLE) > $@
 
 .c.tex:
 	$(PYGMENTIZE) $(PYGMENTIZE_OPTS) -o $@ $<
